@@ -31,4 +31,26 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - uses: actions/upload-artifact@v2
+      with:
+        name: artifact
+        if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn` 
+        path: ${{ github.workspace }}
+        retention-days: 1
+  security:
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      OWASP_DEPCHECK: KMUkV0WjQ1SERyYGMeKJtQ
+      SONARQUBE: P8qxCsJxQim4eN5E5e8vMg
+    steps:
+    - uses: actions/download-artifact@v2
+      with:
+        name: artifact
+    - name: loop security
+      env:       
+        LIST: KMUkV0WjQ1SERyYGMeKJtQ P8qxCsJxQim4eN5E5e8vMg
+      run: for f in $LIST; do docker run -e POLICY_ID=$f -v $GITHUB_WORKSPACE:/code -v $GITHUB_WORKSPACE:/results -v /var/run/docker.sock:/var/run/docker.sock -e SONAR_JAVA_LIBRARY_DIR=\".\" -e SONAR_JAVA_BINARY_DIR=\".\" -e CYBRIC_API_KEY=${{ secrets.ZN_API_KEY }} zeronorth/integration:latest python cybric.py; done
+  
+      
 
