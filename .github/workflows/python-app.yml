@@ -47,10 +47,10 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         name: artifact
-    - name: loop security
+    - name: ZeroNorth Security
       env:       
         LIST: KMUkV0WjQ1SERyYGMeKJtQ P8qxCsJxQim4eN5E5e8vMg
-      run: for f in $LIST; do docker run -e POLICY_ID=$f -v $GITHUB_WORKSPACE:/code -v $GITHUB_WORKSPACE:/results -v /var/run/docker.sock:/var/run/docker.sock -e SONAR_JAVA_LIBRARY_DIR=\".\" -e SONAR_JAVA_BINARY_DIR=\".\" -e CYBRIC_API_KEY=${{ secrets.ZN_API_KEY }} zeronorth/integration:latest python cybric.py; done
+      run: for f in $LIST; do docker run -e POLICY_ID=$f -v $GITHUB_WORKSPACE:/code -v $GITHUB_WORKSPACE:/results -v /var/run/docker.sock:/var/run/docker.sock -e LOG_LEVEL=DEBUG -e SONAR_JAVA_LIBRARY_DIR=\".\" -e SONAR_JAVA_BINARY_DIR=\".\" -e CYBRIC_API_KEY=${{ secrets.ZN_API_KEY }} zeronorth/integration:latest python cybric.py; done
   
       
 
