@@ -22,6 +22,7 @@ jobs:
         python-version: 3.9
     - name: Install dependencies
       run: |
+        npm install --package-lock
         pip3 install --user -r requirements.txt
 
 #    - name: Lint with flake8
