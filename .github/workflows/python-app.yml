@@ -36,8 +36,8 @@ jobs:
         name: artifact
     - name: ZeroNorth Security
       env:       
-        POLICY_IDS: KMUkV0WjQ1SERyYGMeKJtQ P8qxCsJxQim4eN5E5e8vMg XyqdiLcrRgir-60G_l0r-g
-      run: for id in $POLICY_IDS; do docker run -e POLICY_ID=$id -v $GITHUB_WORKSPACE:/code -v $GITHUB_WORKSPACE:/results -v /var/run/docker.sock:/var/run/docker.sock -e LOG_LEVEL=DEBUG -e SONAR_JAVA_LIBRARY_DIR=\".\" -e SONAR_JAVA_BINARY_DIR=\".\" -e CYBRIC_API_KEY=${{ secrets.ZN_API_KEY }} zeronorth/integration:latest python cybric.py; done
+        SCENARIOS: bandit sonarqube
+      run: for scenario in $SCENARIOS; do docker run -e -e SCENARIO=$scenario -e POLICY_NAME=$GITHUB_WORKSPACE-$scenario96 -v $GITHUB_WORKSPACE:/code -v $GITHUB_WORKSPACE:/results -v /var/run/docker.sock:/var/run/docker.sock -e LOG_LEVEL=DEBUG -e SONAR_JAVA_LIBRARY_DIR=\".\" -e SONAR_JAVA_BINARY_DIR=\".\" -e CYBRIC_API_KEY=${{ secrets.ZN_API_KEY }} zeronorth/integration:latest python cybric.py; done
   
       
 
