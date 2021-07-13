@@ -21,6 +21,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip3 install --user -r requirements.txt
+#     Loops through specified scenarios. Ensure scenearios does not have spaces.Set secret.ZN_API_KEY prior to initiating. 
     - name: ZeroNorth Security
       env:       
         SCENARIOS: bandit sonarqube owaspv5
