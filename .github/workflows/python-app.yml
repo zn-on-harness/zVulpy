@@ -21,23 +21,27 @@ jobs:
     - name: Install dependencies
       run: |
         pip3 install --user -r requirements.txt
-    - uses: actions/upload-artifact@v2
-      with:
-        name: artifact
-        if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn` 
-        path: ${{ github.workspace }}
-        retention-days: 1
-  security:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/download-artifact@v2
-      with:
-        name: artifact
+#     Loops through specified scenarios. Ensure scenearios does not have spaces.Set secret.ZN_API_KEY prior to initiating. 
     - name: ZeroNorth Security
       env:       
-        POLICY_IDS: KMUkV0WjQ1SERyYGMeKJtQ P8qxCsJxQim4eN5E5e8vMg XyqdiLcrRgir-60G_l0r-g
-      run: for id in $POLICY_IDS; do docker run -e POLICY_ID=$id -v $GITHUB_WORKSPACE:/code -v $GITHUB_WORKSPACE:/results -v /var/run/docker.sock:/var/run/docker.sock -e LOG_LEVEL=DEBUG -e SONAR_JAVA_LIBRARY_DIR=\".\" -e SONAR_JAVA_BINARY_DIR=\".\" -e CYBRIC_API_KEY=${{ secrets.ZN_API_KEY }} zeronorth/integration:latest python cybric.py; done
-  
-      
-
+        SCENARIOS: bandit sonarqube owaspv5
+      run: |
+        for scenario in $SCENARIOS; do docker run -e SCENARIO=$scenario -e POLICY_NAME=${{github.event.repository.name}}:$scenario -e TARGET_NAME=${{github.event.repository.name}} -e STAGE=build -v $GITHUB_WORKSPACE:/code -v $GITHUB_WORKSPACE:/results -v /var/run/docker.sock:/var/run/docker.sock -e SONAR_JAVA_LIBRARY_DIR=\".\" -e SONAR_JAVA_BINARY_DIR=\".\" -e CYBRIC_API_KEY=${{secrets.ZN_API_KEY}} zeronorth/integration:latest python cybric.py; done
+#     - uses: actions/upload-artifact@v2
+#       with:
+#         name: artifact
+#         if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn` 
+#         path: ${{ github.workspace }}
+#         retention-days: 1
+#   security:
+#     needs: build
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/download-artifact@v2
+#       with:
+#         name: artifact
+#     - name: ZeroNorth Security
+#       env:       
+#         SCENARIOS: bandit sonarqube owaspv5
+#       run: |
+#         for scenario in $SCENARIOS; do docker run -e SCENARIO=$scenario -e POLICY_NAME=${{github.event.repository.name}}:$scenario -e TARGET_NAME=${{github.event.repository.name}} -e STAGE=build -v $GITHUB_WORKSPACE:/code -v $GITHUB_WORKSPACE:/results -v /var/run/docker.sock:/var/run/docker.sock -e LOG_LEVEL=DEBUG -e SONAR_JAVA_LIBRARY_DIR=\".\" -e SONAR_JAVA_BINARY_DIR=\".\" -e CYBRIC_API_KEY=${{secrets.ZN_API_KEY}} zeronorth/integration:latest python cybric.py; done
